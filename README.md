@@ -38,3 +38,63 @@ The Dockerfile uses the Nginx image and copies the HTML file into the Nginx web 
 FROM nginx:latest
 
 COPY index.html /usr/share/nginx/html/index.html
+
+## How Docker Works in This Project
+
+Docker packages the Nginx web server and the `index.html` website into a Docker image.
+
+The Docker image is like a template containing everything needed to run the website.
+
+Jenkins then creates a Docker container from this image. The container is the running instance where Nginx runs and serves the website.
+
+Docker Image
+    ↓
+jenkins-nginx-website
+    ↓
+Docker Container
+    ↓
+jenkins-nginx-container
+    ↓
+Nginx runs inside the container
+    ↓
+Website is served
+
+## Port Mapping
+
+The Docker container is started using:
+
+docker run -d --name jenkins-nginx-container -p 5000:80 jenkins-nginx-website
+
+The `-p 5000:80` option maps two ports:
+
+EC2 Server Port 5000 → Container Port 80
+
+Port `80` is the default port where Nginx listens inside the Docker container.
+
+Port `5000` is the port exposed on the EC2 server.
+
+So when we open:
+
+http://EC2-PUBLIC-IP:5000
+
+The request follows this path:
+
+Browser
+   ↓
+EC2 Public IP :5000
+   ↓
+EC2 Server Port 5000
+   ↓
+Docker Port Mapping
+   ↓
+Container Port 80
+   ↓
+Nginx
+   ↓
+index.html Website
+
+This is why we use `5000:80`.
+
+`5000` = Port on the EC2 server (host port)
+
+`80` = Port inside the Docker container where Nginx is running (container port)
