@@ -15,7 +15,7 @@ pipeline {
                 script {
                     if (params.ENVIRONMENT == 'DEV') {
                         env.CONTAINER_NAME = 'jenkins-nginx-dev'
-                        env.PORT = '5000'
+                        env.PORT = '5004'
                     } else if (params.ENVIRONMENT == 'TEST') {
                         env.CONTAINER_NAME = 'jenkins-nginx-test'
                         env.PORT = '5001'
