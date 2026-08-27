@@ -10,9 +10,28 @@ pipeline {
     }
 
     stages {
+        stage('Set Environment') {
+            steps {
+                script {
+                    if (params.ENVIRONMENT == 'DEV') {
+                        env.CONTAINER_NAME = 'jenkins-nginx-dev'
+                        env.PORT = '5000'
+                    } else if (params.ENVIRONMENT == 'TEST') {
+                        env.CONTAINER_NAME = 'jenkins-nginx-test'
+                        env.PORT = '5001'
+                    } else if (params.ENVIRONMENT == 'PROD') {
+                        env.CONTAINER_NAME = 'jenkins-nginx-prod'
+                        env.PORT = '5002'
+                    }
+                }
+            }
+        }
+
         stage('Show Selected Environment') {
             steps {
-                echo "Deploying to ${params.ENVIRONMENT} environment"
+                echo "Deploying to ${params.ENVIRONMENT}"
+                echo "Container: ${env.CONTAINER_NAME}"
+                echo "Port: ${env.PORT}"
             }
         }
 
@@ -24,13 +43,13 @@ pipeline {
 
         stage('Stop Old Container') {
             steps {
-                sh 'docker rm -f jenkins-nginx-container || true'
+                sh 'docker rm -f ${CONTAINER_NAME} || true'
             }
         }
 
         stage('Run New Container') {
             steps {
-                sh 'docker run -d --name jenkins-nginx-container -p 5000:80 jenkins-nginx-website'
+                sh 'docker run -d --name ${CONTAINER_NAME} -p ${PORT}:80 jenkins-nginx-website'
             }
         }
 
