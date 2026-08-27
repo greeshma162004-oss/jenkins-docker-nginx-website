@@ -1,7 +1,21 @@
+```groovy
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['DEV', 'TEST', 'PROD'],
+            description: 'Select the environment for deployment'
+        )
+    }
+
     stages {
+        stage('Show Selected Environment') {
+            steps {
+                echo "Deploying to ${params.ENVIRONMENT} environment"
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -23,8 +37,9 @@ pipeline {
 
         stage('Deployment Complete') {
             steps {
-                echo 'Website deployed successfully!'
+                echo "Website deployed successfully to ${params.ENVIRONMENT}!"
             }
         }
     }
 }
+```
